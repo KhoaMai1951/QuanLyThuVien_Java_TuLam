@@ -10,19 +10,24 @@ import javax.swing.JTextField;
 import com.sun.jdi.connect.spi.Connection;
 
 import bussiness.QLCSDL;
-import bussiness.user;
+import object.admin;
+import object.member;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.awt.event.ActionEvent;
+import javax.swing.JRadioButton;
+import javax.swing.JPanel;
 
-public class h {
+public class login_form {
 
 	private JFrame frmLogin;
 	private JTextField txtUsername;
 	private JTextField txtPassword;
+	
 
 	/**
 	 * Launch the application.
@@ -31,7 +36,7 @@ public class h {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					h window = new h();
+					login_form window = new login_form();
 					window.frmLogin.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -39,29 +44,32 @@ public class h {
 			}
 		});
 	}
+	
 
 	/**
 	 * Create the application.
 	 */
-	public h() {
+	public login_form() {
 		initialize();
 	}
 
+	
 	/**
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		
 		frmLogin = new JFrame();
 		frmLogin.setTitle("LOGIN");
-		frmLogin.setBounds(100, 100, 284, 299);
+		frmLogin.setBounds(100, 100, 272, 426);
 		frmLogin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmLogin.getContentPane().setLayout(null);
 		
-		JLabel lblUsername = new JLabel("Username");
+		JLabel lblUsername = new JLabel("T\u00EAn \u0111\u0103ng nh\u1EADp");
 		lblUsername.setBounds(44, 38, 103, 28);
 		frmLogin.getContentPane().add(lblUsername);
 		
-		JLabel lblPassword = new JLabel("Password");
+		JLabel lblPassword = new JLabel("M\u1EADt kh\u1EA9u");
 		lblPassword.setBounds(44, 105, 103, 14);
 		frmLogin.getContentPane().add(lblPassword);
 		
@@ -75,7 +83,32 @@ public class h {
 		frmLogin.getContentPane().add(txtPassword);
 		txtPassword.setColumns(10);
 		
-		JButton btnLogin = new JButton("Login");
+		
+		
+		JButton btnLogin = new JButton("\u0110\u0103ng nh\u1EADp");
+		
+		btnLogin.setBounds(67, 314, 122, 47);
+		frmLogin.getContentPane().add(btnLogin);
+		
+		JPanel panel = new JPanel();
+		panel.setBounds(44, 184, 167, 90);
+		frmLogin.getContentPane().add(panel);
+		panel.setLayout(null);
+		
+		JRadioButton rdbtnAdmin = new JRadioButton("Admin");
+		rdbtnAdmin.setBounds(30, 7, 109, 23);
+		panel.add(rdbtnAdmin);
+		
+		JRadioButton rdbtnMember = new JRadioButton("Th\u00E0nh vi\u00EAn");
+		rdbtnMember.setBounds(30, 55, 109, 23);
+		panel.add(rdbtnMember);
+		
+		//Create ButtonGroup
+		ButtonGroup bg1 = new ButtonGroup( );
+		bg1.add(rdbtnAdmin);
+		bg1.add(rdbtnMember);
+		
+		
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				QLCSDL qlcsdl = new QLCSDL();
@@ -83,14 +116,34 @@ public class h {
 				String password = txtPassword.getText();
 
 				try {
-					
-					user user = qlcsdl.timUser(username, password);
-					if(user==null){
-						JOptionPane.showMessageDialog(null, "Invalid UserName or Password");
-						 }else{
-						JOptionPane.showMessageDialog(null, "Login is successfully!");
-
-						 }
+					if(rdbtnAdmin.isSelected())
+					{
+						admin h = admin.timUser(username, password);
+						if(h==null)
+						{
+							JOptionPane.showMessageDialog(null, "Invalid UserName or Password");
+						}
+						else
+						{
+							JOptionPane.showMessageDialog(null, "Login is successfully!");
+							admin_function form = new admin_function();
+							form.setVisible(true);
+						}
+					}
+					if(rdbtnMember.isSelected())
+					{
+						member k = member.timUser(username, password);
+						if(k==null)
+						{
+							JOptionPane.showMessageDialog(null, "Invalid UserName or Password");	 
+						}
+						else
+						{
+							JOptionPane.showMessageDialog(null, "Login is successfully!");
+							member_form form = new member_form();
+							form.setVisible(true);
+						}
+					}
 					
 				} catch (ClassNotFoundException | SQLException e1) {
 					// TODO Auto-generated catch block
@@ -100,7 +153,9 @@ public class h {
 				
 			}
 		});
-		btnLogin.setBounds(84, 186, 89, 47);
-		frmLogin.getContentPane().add(btnLogin);
+		
+		
+		
 	}
+
 }
