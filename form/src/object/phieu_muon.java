@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 import bussiness.QLCSDL;
@@ -57,8 +58,14 @@ public class phieu_muon {
 	 return member;
 	}
 	
-	
-	//Xuất table
+	//Lưu mã bạn đọc hiện hành vào cột Ma_Ban_Doc_Hien_Hanh
+	public static void luuMaBanDocHienHanh(int ma_hien_hanh) throws ClassNotFoundException, SQLException {
+		Connection conn = QLCSDL.connect();
+		java.sql.Statement statement = ((java.sql.Connection) conn).createStatement();
+		String sql = "UPDATE phieu_muon SET Ma_Ban_Doc_Hien_Hanh = '"+ma_hien_hanh+"'";
+		int resultSet = statement.executeUpdate(sql);
+	}
+	//Xuất table thông tin phiếu mượn
 	public static DefaultTableModel xuatTable(DefaultTableModel dtm)
 	{
 		Connection conn = null;
@@ -75,7 +82,8 @@ public class phieu_muon {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		 String sql = "SELECT * FROM phieu_muon";
+		 String sql = "SELECT * FROM phieu_muon, sach WHERE ma_ban_doc = ma_ban_doc_hien_hanh "
+		 		+ "AND phieu_muon.Ma_Sach = sach.Ma_Sach";
 		 ResultSet resultSet = null;
 		try {
 			resultSet = statement.executeQuery(sql);
@@ -87,6 +95,7 @@ public class phieu_muon {
 			while (resultSet.next()) 
 			 {
 				 Vector v = new Vector();
+				 v.add(resultSet.getString("Ten_Sach"));
 				 v.add(resultSet.getString("Ma_Phieu_Muon"));
 				 v.add(resultSet.getString("Ma_Ban_Doc"));
 				 v.add(resultSet.getString("Ma_Sach"));
@@ -100,6 +109,42 @@ public class phieu_muon {
 			e.printStackTrace();
 		}
 		return dtm;
+	}
+
+	//Nhập dữ liệu phiếu mượn mới từ form người đọc
+	//, String dateReturn, int maSach, int maBanDoc
+	public static void nhapPhieuMuon(String dateBorrow, int MaSach, String dateReturn,
+			int MaBanDoc, int MaBanDocHienHanh) throws ClassNotFoundException, SQLException
+	{
+		Connection conn = QLCSDL.connect();
+		java.sql.Statement statement = ((java.sql.Connection) conn).createStatement();
+		String sql = "INSERT INTO phieu_muon(Ngay_Muon, Ma_Sach, Han_Tra, Ma_Ban_Doc, Ma_Ban_Doc_Hien_Hanh) "
+				+ "VALUES('"+dateBorrow+"','"+MaSach+"', "
+				+ "'"+dateReturn+"', '"+MaBanDoc+"', '"+MaBanDocHienHanh+"')";
+		int resultSet = statement.executeUpdate(sql);
+		if(resultSet > 0)
+		{
+			JOptionPane.showMessageDialog(null, "Mượn Sách Thành Công!");
+		}
+	}
+	
+	//Kiểm tra bạn đọc đã mượn 1 cuốn sách đã chọn rồi hay chưa
+	public static phieu_muon kiemTraDaMuon(int Ma_Sach, int Ma_Ban_Doc_Hien_Hanh) throws ClassNotFoundException, SQLException
+	{
+		phieu_muon phieu_muon = null;
+		Connection conn = QLCSDL.connect();
+		java.sql.Statement statement = ((java.sql.Connection) conn).createStatement();
+		String sql = "SELECT * FROM phieu_muon WHERE Ma_Sach = "+Ma_Sach+" "
+				+ "AND Ma_Ban_Doc = "+Ma_Ban_Doc_Hien_Hanh+ " AND Tra_Sach = 0" ;
+		ResultSet resultSet = statement.executeQuery(sql);
+		while (resultSet.next()) 
+		{
+		phieu_muon = new phieu_muon();
+		phieu_muon.setMa_Sach(Ma_Sach);
+		break;
+		}
+		 
+		return phieu_muon;
 	}
 	
 	public static int xuatPhieuMuon(){

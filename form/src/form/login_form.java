@@ -12,6 +12,7 @@ import com.sun.jdi.connect.spi.Connection;
 import bussiness.QLCSDL;
 import object.admin;
 import object.member;
+import object.phieu_muon;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -139,7 +140,11 @@ public class login_form {
 						}
 						else
 						{
-							JOptionPane.showMessageDialog(null, "Login is successfully!");
+							
+							int ma_ban_doc_hien_hanh = k.getMa_Ban_Doc();
+							phieu_muon.luuMaBanDocHienHanh(ma_ban_doc_hien_hanh);
+							member.luuMaBanDocHienHanh(ma_ban_doc_hien_hanh);
+							JOptionPane.showMessageDialog(null, "Login Successful");
 							member_form form = new member_form();
 							form.setVisible(true);
 						}

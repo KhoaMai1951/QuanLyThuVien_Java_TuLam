@@ -1,4 +1,7 @@
 eclipse.preferences.version=1
 encoding//src/bussiness/QLCSDL.java=UTF-8
+encoding//src/form/admin_update_form.java=UTF-8
 encoding//src/form/member_form.java=UTF-8
+encoding//src/object/member.java=UTF-8
 encoding//src/object/phieu_muon.java=UTF-8
+encoding//src/object/sach.java=UTF-8
