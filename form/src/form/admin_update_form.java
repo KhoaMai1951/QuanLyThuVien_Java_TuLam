@@ -5,8 +5,11 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
@@ -58,9 +61,16 @@ public class admin_update_form extends JFrame {
 	private JTextField textFieldMaBanDoc;
 	private JTextField textFieldMaSach2;
 	private JTable tableAdminUpdate;
-	private JTextField textField;
+	private JTextField textFieldAdminUsername;
 	private JTextField textFieldAdminPassword;
 	private JTextField textFieldMaAdmin;
+	private JTable tableMemberUpdate;
+	private JTextField textFieldUsernameBanDoc;
+	private JTextField textFieldPasswordBanDoc;
+	private JTextField textField;
+	private JTextField textFieldDiaChiMember;
+	private JTextField textFieldDienThoaiMember;
+	private JTextField textFieldMaBanDocUpdateBanDoc;
 
 	/**
 	 * Launch the application.
@@ -89,7 +99,7 @@ public class admin_update_form extends JFrame {
 		return ngayMuonReturnAsString;
 	}
 	// Output table Sach
-	public void outputTable (JTable table, String tableName)
+	public void outputTable (JTable table, String tableName) throws ClassNotFoundException, SQLException
 	{
 		//----------set variable table as DefaultTableModel and add row--------------------
 		DefaultTableModel dtm_sach = (DefaultTableModel) table.getModel();		
@@ -103,6 +113,10 @@ public class admin_update_form extends JFrame {
 			case "tableUpdateSach":
 				//Xuất danh sách data sách ra table
 				dtm_sach = sach.xuatTable(dtm_sach);
+				break;
+			case "tableAdminUpdate":
+				//Xuất danh sách data sách ra table
+				dtm_sach = admin.xuatTable(dtm_sach);
 				break;
 		}
 	}
@@ -120,7 +134,7 @@ public class admin_update_form extends JFrame {
 	}
 	
 	// Update Table
-	public void updateTable(JTable table, String tableName)
+	public void updateTable(JTable table, String tableName) throws ClassNotFoundException, SQLException
 	{
 		clearTable(table);
 		outputTable(table, tableName);
@@ -708,6 +722,105 @@ public class admin_update_form extends JFrame {
 		}
 		scrollPane.setViewportView(tableUpdateSach);
 		
+		JPanel panel_BanDoc = new JPanel();
+		tabbedPaneUpdateSach.addTab("Bạn Đọc", null, panel_BanDoc, null);
+		panel_BanDoc.setLayout(null);
+		
+		JScrollPane scrollPane_5 = new JScrollPane();
+		scrollPane_5.setBounds(0, 280, 1159, 331);
+		panel_BanDoc.add(scrollPane_5);
+		
+		tableMemberUpdate = new JTable();
+		tableMemberUpdate.setModel(new DefaultTableModel(
+			new Object[][] {
+			},
+			new String[] {
+				"M\u00E3 B\u1EA1n \u0110\u1ECDc", "Username", "Password", "T\u00EAn B\u1EA1n \u0110\u1ECDc", "Ng\u00E0y Sinh", "\u0110\u1ECBa Ch\u1EC9", "\u0110i\u1EC7n Tho\u1EA1i"
+			}
+		));
+		scrollPane_5.setViewportView(tableMemberUpdate);
+		
+		//----------set variable table as DefaultTableModel and add row--------------------
+		DefaultTableModel dtm_member = (DefaultTableModel) tableMemberUpdate.getModel();		
+						
+		//Xuất danh sách data member ra table
+		dtm_member = sach.xuatTable(dtm_member);
+		
+		JLabel label_1 = new JLabel("Username");
+		label_1.setFont(new Font("Tahoma", Font.BOLD, 14));
+		label_1.setBounds(40, 59, 83, 17);
+		panel_BanDoc.add(label_1);
+		
+		textFieldUsernameBanDoc = new JTextField();
+		textFieldUsernameBanDoc.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textFieldUsernameBanDoc.setColumns(10);
+		textFieldUsernameBanDoc.setBounds(133, 50, 111, 35);
+		panel_BanDoc.add(textFieldUsernameBanDoc);
+		
+		JLabel lblPassword_1 = new JLabel("Password");
+		lblPassword_1.setFont(new Font("Tahoma", Font.BOLD, 14));
+		lblPassword_1.setBounds(40, 121, 83, 17);
+		panel_BanDoc.add(lblPassword_1);
+		
+		textFieldPasswordBanDoc = new JTextField();
+		textFieldPasswordBanDoc.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textFieldPasswordBanDoc.setColumns(10);
+		textFieldPasswordBanDoc.setBounds(133, 112, 111, 35);
+		panel_BanDoc.add(textFieldPasswordBanDoc);
+		
+		JLabel lblTnBnc = new JLabel("Tên Bạn Đọc");
+		lblTnBnc.setFont(new Font("Tahoma", Font.BOLD, 14));
+		lblTnBnc.setBounds(313, 59, 100, 17);
+		panel_BanDoc.add(lblTnBnc);
+		
+		textField = new JTextField();
+		textField.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textField.setColumns(10);
+		textField.setBounds(423, 50, 111, 35);
+		panel_BanDoc.add(textField);
+		
+		JLabel lblNgySinh = new JLabel("Ngày Sinh");
+		lblNgySinh.setFont(new Font("Tahoma", Font.BOLD, 14));
+		lblNgySinh.setBounds(313, 118, 83, 26);
+		panel_BanDoc.add(lblNgySinh);
+		
+		JDateChooser dateChooserNgaySinhBanDoc = new JDateChooser();
+		dateChooserNgaySinhBanDoc.setBounds(423, 112, 111, 35);
+		panel_BanDoc.add(dateChooserNgaySinhBanDoc);
+		
+		JLabel lblaCh = new JLabel("Địa Chỉ");
+		lblaCh.setFont(new Font("Tahoma", Font.BOLD, 14));
+		lblaCh.setBounds(618, 59, 83, 17);
+		panel_BanDoc.add(lblaCh);
+		
+		textFieldDiaChiMember = new JTextField();
+		textFieldDiaChiMember.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textFieldDiaChiMember.setColumns(10);
+		textFieldDiaChiMember.setBounds(711, 50, 381, 35);
+		panel_BanDoc.add(textFieldDiaChiMember);
+		
+		JLabel lblinThoi = new JLabel("Điện Thoại");
+		lblinThoi.setFont(new Font("Tahoma", Font.BOLD, 14));
+		lblinThoi.setBounds(618, 121, 83, 17);
+		panel_BanDoc.add(lblinThoi);
+		
+		textFieldDienThoaiMember = new JTextField();
+		textFieldDienThoaiMember.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textFieldDienThoaiMember.setColumns(10);
+		textFieldDienThoaiMember.setBounds(711, 112, 136, 35);
+		panel_BanDoc.add(textFieldDienThoaiMember);
+		
+		JLabel lblMBnc_1 = new JLabel("Mã Bạn Đọc");
+		lblMBnc_1.setFont(new Font("Tahoma", Font.BOLD, 14));
+		lblMBnc_1.setBounds(914, 121, 94, 17);
+		panel_BanDoc.add(lblMBnc_1);
+		
+		textFieldMaBanDocUpdateBanDoc = new JTextField();
+		textFieldMaBanDocUpdateBanDoc.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textFieldMaBanDocUpdateBanDoc.setColumns(10);
+		textFieldMaBanDocUpdateBanDoc.setBounds(1018, 112, 74, 35);
+		panel_BanDoc.add(textFieldMaBanDocUpdateBanDoc);
+		
 		JPanel panel_UpdateAdmin = new JPanel();
 		tabbedPaneUpdateSach.addTab("Admin", null, panel_UpdateAdmin, null);
 		panel_UpdateAdmin.setLayout(null);
@@ -737,6 +850,8 @@ public class admin_update_form extends JFrame {
 		// Set row height
 		tableAdminUpdate.setRowHeight(30);
 		
+		//tableAdminUpdate
+		
 		//----------set variable table as DefaultTableModel and add row--------------------
 		DefaultTableModel dtm_admin = (DefaultTableModel) tableAdminUpdate.getModel();
 		
@@ -748,11 +863,11 @@ public class admin_update_form extends JFrame {
 		label.setBounds(41, 52, 83, 17);
 		panel_UpdateAdmin.add(label);
 		
-		textField = new JTextField();
-		textField.setFont(new Font("Tahoma", Font.BOLD, 14));
-		textField.setColumns(10);
-		textField.setBounds(134, 43, 111, 35);
-		panel_UpdateAdmin.add(textField);
+		textFieldAdminUsername = new JTextField();
+		textFieldAdminUsername.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textFieldAdminUsername.setColumns(10);
+		textFieldAdminUsername.setBounds(134, 43, 111, 35);
+		panel_UpdateAdmin.add(textFieldAdminUsername);
 		
 		JLabel lblPassword = new JLabel("Password");
 		lblPassword.setFont(new Font("Tahoma", Font.BOLD, 14));
@@ -777,17 +892,142 @@ public class admin_update_form extends JFrame {
 		textFieldMaAdmin.setBounds(419, 43, 111, 35);
 		panel_UpdateAdmin.add(textFieldMaAdmin);
 		
-		JRadioButton rdbtnrdbtnThemAdmin = new JRadioButton("Thêm admin");
-		rdbtnrdbtnThemAdmin.setBounds(41, 161, 109, 23);
-		panel_UpdateAdmin.add(rdbtnrdbtnThemAdmin);
+		JRadioButton rdbtnThemAdmin = new JRadioButton("Thêm admin");
+		rdbtnThemAdmin.setSelected(true);
+		rdbtnThemAdmin.setFont(new Font("Tahoma", Font.BOLD, 14));
+		rdbtnThemAdmin.setBounds(41, 161, 161, 23);
+		panel_UpdateAdmin.add(rdbtnThemAdmin);
 		
-		JRadioButton rdbtnXoaSuaAdmin = new JRadioButton("Xóa, Sửa Admin");
-		rdbtnXoaSuaAdmin.setBounds(41, 193, 109, 23);
+		JRadioButton rdbtnXoaSuaAdmin = new JRadioButton("Xóa, Sửa admin");
+		rdbtnXoaSuaAdmin.setFont(new Font("Tahoma", Font.BOLD, 14));
+		rdbtnXoaSuaAdmin.setBounds(41, 193, 161, 23);
 		panel_UpdateAdmin.add(rdbtnXoaSuaAdmin);
 		
 		ButtonGroup btgAdmin = new ButtonGroup();
-		btgAdmin.add(rdbtnrdbtnThemAdmin);
+		btgAdmin.add(rdbtnThemAdmin);
 		btgAdmin.add(rdbtnXoaSuaAdmin);
-
+		
+		JButton btnThemAdmin = new JButton("THÊM ADMIN");
+		btnThemAdmin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String Username = textFieldAdminUsername.getText();
+				String Password = textFieldAdminPassword.getText();
+				if(Username!=null && Password!=null)
+				{
+					try {
+						admin.themAdmin(Username, Password);
+					} catch (ClassNotFoundException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					try {
+						updateTable(tableAdminUpdate, "tableAdminUpdate");
+					} catch (ClassNotFoundException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+				else JOptionPane.showMessageDialog(null,"Chua nhap username hoac password!!!");
+			}
+		});
+		btnThemAdmin.setFont(new Font("Tahoma", Font.BOLD, 14));
+		btnThemAdmin.setBounds(312, 154, 145, 36);
+		panel_UpdateAdmin.add(btnThemAdmin);
+		
+		JButton btnXoaAdmin = new JButton("XÓA ADMIN");
+		btnXoaAdmin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int MaAdmin = Integer.parseInt(textFieldMaAdmin.getText());
+				try {
+					admin.xoaAdmin(MaAdmin);
+					updateTable(tableAdminUpdate, "tableAdminUpdate");
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		btnXoaAdmin.setEnabled(false);
+		btnXoaAdmin.setFont(new Font("Tahoma", Font.BOLD, 14));
+		btnXoaAdmin.setBounds(728, 154, 131, 36);
+		panel_UpdateAdmin.add(btnXoaAdmin);
+		
+		JButton btnSuaAdmin = new JButton("SỬA ADMIN");
+		btnSuaAdmin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String Password = textFieldAdminPassword.getText();
+				String Username = textFieldAdminUsername.getText();
+				int MaAdmin = Integer.parseInt(textFieldMaAdmin.getText());
+				
+				if(Password != null && Username != null)
+				{
+					try {
+						admin.suaAdmin(MaAdmin, Username, Password);
+						updateTable(tableAdminUpdate, "tableAdminUpdate");
+					} catch (ClassNotFoundException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
+		btnSuaAdmin.setEnabled(false);
+		btnSuaAdmin.setFont(new Font("Tahoma", Font.BOLD, 14));
+		btnSuaAdmin.setBounds(525, 154, 131, 36);
+		panel_UpdateAdmin.add(btnSuaAdmin);
+				
+		// Xử lí radiobutton Xóa Sửa Admin
+		rdbtnXoaSuaAdmin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(rdbtnXoaSuaAdmin.isSelected() == true)
+		        {
+		        	btnXoaAdmin.setEnabled(true);
+		        	btnSuaAdmin.setEnabled(true);
+		        	btnThemAdmin.setEnabled(false);
+		        	
+					//Lấy dữ liệu từ table xuất ra textfield
+					tableAdminUpdate.addMouseListener(new MouseAdapter() 
+					{
+						@Override
+						public void mouseClicked (MouseEvent e) 
+						{
+							int row = tableAdminUpdate.getSelectedRow();
+							textFieldAdminUsername.setText((String)tableAdminUpdate.getModel().getValueAt(row, 0));
+							textFieldAdminPassword.setText((String)tableAdminUpdate.getModel().getValueAt(row, 1));
+							textFieldMaAdmin.setText((String)tableAdminUpdate.getModel().getValueAt(row, 2));
+						}
+					});
+		        }
+			}
+		});
+		
+		// Xử lý Radiobutton Thêm Admin
+		rdbtnThemAdmin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(rdbtnThemAdmin.isSelected() == true)
+		        {
+		        	btnXoaAdmin.setEnabled(false);
+		        	btnSuaAdmin.setEnabled(false);
+		        	btnThemAdmin.setEnabled(true);
+		        	
+		        	textFieldAdminUsername.setText("");
+					textFieldAdminPassword.setText("");
+					textFieldMaAdmin.setText("");
+		        }
+			}
+		});
+		
 	}
 }

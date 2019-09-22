@@ -3,6 +3,9 @@ package object;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Vector;
+
+import javax.swing.table.DefaultTableModel;
 
 import bussiness.QLCSDL;
 
@@ -69,7 +72,7 @@ public class member {
 	 
 	 Connection conn = QLCSDL.connect();
 	 java.sql.Statement statement = ((java.sql.Connection) conn).createStatement();
-	 String sql = "SELECT * FROM ban_doc WHERE username like '" + username + "' and Password like '" + password + "'";
+	 String sql = "SELECT * FROM ban_doc WHERE username like '" + username + "' and Password like '" + password + "' and Da_Xoa like 0";
 	 ResultSet resultSet = statement.executeQuery(sql);
 	 while (resultSet.next()) 
 	 {
@@ -116,5 +119,36 @@ public class member {
 			return num;
 		}
 		return 0;
+	}
+	
+	//Xuất table bạn đọc ra form của Admin
+	public static DefaultTableModel xuatTable(DefaultTableModel dtm) throws ClassNotFoundException, SQLException
+	{
+	Connection conn = null;
+	
+	conn = QLCSDL.connect();
+	
+	java.sql.Statement statement = null;
+	
+	statement = ((java.sql.Connection) conn).createStatement();
+	
+	String sql = "SELECT * FROM member WHERE da_xoa = 0";
+	ResultSet resultSet = null;
+	
+	resultSet = statement.executeQuery(sql);
+
+	while (resultSet.next()) 
+	{
+	 Vector v = new Vector();
+	 v.add(resultSet.getString("Ma_Sach"));
+	 v.add(resultSet.getString("Ten_Sach"));
+	 v.add(resultSet.getString("Ten_Tac_Gia"));
+	 v.add(resultSet.getString("Nha_XB"));
+	 v.add(resultSet.getString("Gia_Tien"));
+	 v.add(resultSet.getString("So_Luong"));
+	 dtm.addRow(v);
+	}
+	
+	return dtm;
 	}
 }
