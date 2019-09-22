@@ -117,5 +117,4 @@ public class member {
 		}
 		return 0;
 	}
-		
 }

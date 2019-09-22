@@ -10,6 +10,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import object.admin;
+import object.member;
+import object.phieu_muon;
 import object.sach;
 
 import javax.swing.JTabbedPane;
@@ -28,9 +31,17 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.awt.event.ActionEvent;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JTextField;
+import com.toedter.calendar.JDateChooser;
+import java.awt.Button;
 
 public class admin_update_form extends JFrame {
 
@@ -42,6 +53,14 @@ public class admin_update_form extends JFrame {
 	private JTextField textFieldNXB;
 	private JTextField textFieldGiaTien;
 	private JTextField textFieldSoLuong;
+	private JTable tableUpdatePhieuMuon;
+	private JTextField textFieldMaPhieuMuon;
+	private JTextField textFieldMaBanDoc;
+	private JTextField textFieldMaSach2;
+	private JTable tableAdminUpdate;
+	private JTextField textField;
+	private JTextField textFieldAdminPassword;
+	private JTextField textFieldMaAdmin;
 
 	/**
 	 * Launch the application.
@@ -59,14 +78,33 @@ public class admin_update_form extends JFrame {
 		});
 	}
 
+	// Lấy dữ liệu từ JDateChooser chuyển thành String
+	public String outputDate(JDateChooser jdatechooser)
+	{
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+		Date JDateChooserReturnAsDate = jdatechooser.getDate();
+		LocalDateTime ldtDate = LocalDateTime.ofInstant(JDateChooserReturnAsDate.toInstant(), 
+				ZoneId.systemDefault());
+		String ngayMuonReturnAsString = dtf.format(ldtDate);
+		return ngayMuonReturnAsString;
+	}
 	// Output table Sach
-	public void outputTable ()
+	public void outputTable (JTable table, String tableName)
 	{
 		//----------set variable table as DefaultTableModel and add row--------------------
-		DefaultTableModel dtm_sach = (DefaultTableModel) tableUpdateSach.getModel();		
-						
-		//Xuất danh sách data phiếu mượn ra table
-		dtm_sach = sach.xuatTable(dtm_sach);
+		DefaultTableModel dtm_sach = (DefaultTableModel) table.getModel();		
+	
+		switch(tableName)
+		{
+			case "tableUpdatePhieuMuon":
+				//Xuất danh sách data phiếu mượn ra table
+				dtm_sach = phieu_muon.xuatTableAdminUpdate(dtm_sach);
+				break;
+			case "tableUpdateSach":
+				//Xuất danh sách data sách ra table
+				dtm_sach = sach.xuatTable(dtm_sach);
+				break;
+		}
 	}
 	
 	// Clear Table
@@ -82,16 +120,18 @@ public class admin_update_form extends JFrame {
 	}
 	
 	// Update Table
-	public void updateTable(JTable table)
+	public void updateTable(JTable table, String tableName)
 	{
 		clearTable(table);
-		outputTable();
+		outputTable(table, tableName);
 	}
 		
 	/**
 	 * Create the frame.
+	 * @throws SQLException 
+	 * @throws ClassNotFoundException 
 	 */
-	public admin_update_form() {
+	public admin_update_form() throws ClassNotFoundException, SQLException {
 		setTitle("C\u1EADp Nh\u1EADt ");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1200, 700);
@@ -100,12 +140,12 @@ public class admin_update_form extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(10, 11, 1164, 639);
-		contentPane.add(tabbedPane);
+		JTabbedPane tabbedPaneUpdateSach = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPaneUpdateSach.setBounds(10, 11, 1164, 639);
+		contentPane.add(tabbedPaneUpdateSach);
 		
 		JPanel panel_UpdateSach = new JPanel();
-		tabbedPane.addTab("Cập Nhật Sách", null, panel_UpdateSach, null);
+		tabbedPaneUpdateSach.addTab("Cập Nhật Sách", null, panel_UpdateSach, null);
 		
 		JButton btnThem = new JButton("THÊM");
 		btnThem.addActionListener(new ActionListener() {
@@ -118,6 +158,7 @@ public class admin_update_form extends JFrame {
 				
 				try {
 					sach.themSachMoi(TenSach, TenTacGia, NXB, GiaTien, SoLuong);
+					updateTable(tableUpdateSach, "tableUpdateSach");
 				} catch (ClassNotFoundException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -137,7 +178,7 @@ public class admin_update_form extends JFrame {
 					// Hàm xoaSach của sach
 					sach.xoaSach(MaSach);
 					// Hàm updateTable ở trên
-					updateTable(tableUpdateSach);
+					updateTable(tableUpdateSach, "tableUpdateSach");
 				} catch (ClassNotFoundException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -162,7 +203,7 @@ public class admin_update_form extends JFrame {
 				
 				try {
 					sach.suaSach(MaSach, TenSach, TenTacGia, NXB, GiaTien, SoLuong);
-					updateTable(tableUpdateSach);
+					updateTable(tableUpdateSach, "tableUpdateSach");
 				} catch (ClassNotFoundException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -256,8 +297,9 @@ public class admin_update_form extends JFrame {
 							.addGap(57)
 							.addGroup(gl_panel_UpdateSach.createParallelGroup(Alignment.LEADING, false)
 								.addGroup(gl_panel_UpdateSach.createSequentialGroup()
-									.addComponent(lblTnTcGa, GroupLayout.PREFERRED_SIZE, 101, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(lblTnTcGa, GroupLayout.PREFERRED_SIZE, 87, GroupLayout.PREFERRED_SIZE)
+									.addGap(18)
 									.addComponent(textFieldTenTacGia, GroupLayout.PREFERRED_SIZE, 172, GroupLayout.PREFERRED_SIZE))
 								.addGroup(gl_panel_UpdateSach.createSequentialGroup()
 									.addGap(42)
@@ -267,8 +309,8 @@ public class admin_update_form extends JFrame {
 							.addGap(106)
 							.addGroup(gl_panel_UpdateSach.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_panel_UpdateSach.createSequentialGroup()
-									.addComponent(lblGaTin, GroupLayout.PREFERRED_SIZE, 101, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(lblGaTin, GroupLayout.PREFERRED_SIZE, 87, GroupLayout.PREFERRED_SIZE)
+									.addGap(18)
 									.addComponent(textFieldGiaTien, GroupLayout.PREFERRED_SIZE, 147, GroupLayout.PREFERRED_SIZE))
 								.addGroup(gl_panel_UpdateSach.createSequentialGroup()
 									.addComponent(lblSLng, GroupLayout.PREFERRED_SIZE, 101, GroupLayout.PREFERRED_SIZE)
@@ -286,11 +328,10 @@ public class admin_update_form extends JFrame {
 								.addGroup(gl_panel_UpdateSach.createParallelGroup(Alignment.LEADING)
 									.addGroup(gl_panel_UpdateSach.createSequentialGroup()
 										.addGap(2)
-										.addGroup(gl_panel_UpdateSach.createParallelGroup(Alignment.TRAILING)
-											.addComponent(lblMSch, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE)
-											.addComponent(lblTnTcGa, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE)))
+										.addComponent(lblMSch, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE))
 									.addComponent(textFieldTenTacGia, GroupLayout.PREFERRED_SIZE, 37, GroupLayout.PREFERRED_SIZE))
-								.addComponent(textFieldMaSach, GroupLayout.PREFERRED_SIZE, 37, GroupLayout.PREFERRED_SIZE))
+								.addComponent(textFieldMaSach, GroupLayout.PREFERRED_SIZE, 37, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblTnTcGa, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE))
 							.addGroup(gl_panel_UpdateSach.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_panel_UpdateSach.createSequentialGroup()
 									.addGap(19)
@@ -304,10 +345,10 @@ public class admin_update_form extends JFrame {
 										.addComponent(lblNxb, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE)))))
 						.addGroup(gl_panel_UpdateSach.createSequentialGroup()
 							.addGroup(gl_panel_UpdateSach.createParallelGroup(Alignment.LEADING)
+								.addComponent(textFieldGiaTien, GroupLayout.PREFERRED_SIZE, 37, GroupLayout.PREFERRED_SIZE)
 								.addGroup(gl_panel_UpdateSach.createSequentialGroup()
 									.addGap(2)
-									.addComponent(lblGaTin, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE))
-								.addComponent(textFieldGiaTien, GroupLayout.PREFERRED_SIZE, 37, GroupLayout.PREFERRED_SIZE))
+									.addComponent(lblGaTin, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE)))
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(gl_panel_UpdateSach.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_panel_UpdateSach.createSequentialGroup()
@@ -324,7 +365,7 @@ public class admin_update_form extends JFrame {
 					.addGap(7)
 					.addComponent(rdbtnXoaSua, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
 					.addGap(18)
-					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE))
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 340, Short.MAX_VALUE))
 		);
 		
 		tableUpdateSach = new JTable();
@@ -338,19 +379,19 @@ public class admin_update_form extends JFrame {
 		scrollPane.setViewportView(tableUpdateSach);
 		// Set row height
 		tableUpdateSach.setRowHeight(30);
-				// Align row center 
-				DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-				centerRenderer.setHorizontalAlignment( JLabel.CENTER );
-				for(int x=0; x<6; x++)
-				{
-					tableUpdateSach.getColumnModel().getColumn(x).setCellRenderer( centerRenderer );
-				}
-				scrollPane.setViewportView(tableUpdateSach);
-				//----------set variable table as DefaultTableModel and add row--------------------
-				DefaultTableModel dtm_sach = (DefaultTableModel) tableUpdateSach.getModel();		
-								
-				//Xuất danh sách data phiếu mượn ra table
-				dtm_sach = sach.xuatTable(dtm_sach);
+		// Align row center 
+		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+		centerRenderer.setHorizontalAlignment( JLabel.CENTER );
+		for(int x=0; x<6; x++)
+		{
+			tableUpdateSach.getColumnModel().getColumn(x).setCellRenderer( centerRenderer );
+		}
+		scrollPane.setViewportView(tableUpdateSach);
+		//----------set variable table as DefaultTableModel and add row--------------------
+		DefaultTableModel dtm_sach = (DefaultTableModel) tableUpdateSach.getModel();		
+						
+		//Xuất danh sách data phiếu mượn ra table
+		dtm_sach = sach.xuatTable(dtm_sach);
 		
 		
 		ButtonGroup group = new ButtonGroup();
@@ -402,6 +443,351 @@ public class admin_update_form extends JFrame {
 			}
 		});
 		panel_UpdateSach.setLayout(gl_panel_UpdateSach);
+		
+		JPanel panel_UpdatePhieuMuon = new JPanel();
+		tabbedPaneUpdateSach.addTab("Cập Nhật Phiếu Mượn", null, panel_UpdatePhieuMuon, null);
+		panel_UpdatePhieuMuon.setLayout(null);
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		scrollPane_1.setBounds(0, 283, 1159, 328);
+		panel_UpdatePhieuMuon.add(scrollPane_1);
+		
+		tableUpdatePhieuMuon = new JTable();
+		tableUpdatePhieuMuon.setModel(new DefaultTableModel(
+			new Object[][] {
+			},
+			new String[] {
+				"M\u00E3 Phi\u1EBFu M\u01B0\u1EE3n", "M\u00E3 B\u1EA1n \u0110\u1ECDc", "M\u00E3 S\u00E1ch", "Ng\u00E0y M\u01B0\u1EE3n", "H\u1EA1n Tr\u1EA3", "Ng\u00E0y Tr\u1EA3", "\u0110\u00E3 Tr\u1EA3 S\u00E1ch"
+			}
+		));
+		scrollPane_1.setViewportView(tableUpdatePhieuMuon);
+		// Set row height
+		tableUpdatePhieuMuon.setRowHeight(30);
+		
+		//----------set variable table as DefaultTableModel and add row--------------------
+		DefaultTableModel dtm_phieuMuon = (DefaultTableModel) tableUpdatePhieuMuon.getModel();
+		
+		//Xuất danh sách data phiếu mượn ra table update của admin
+		dtm_phieuMuon = phieu_muon.xuatTableAdminUpdate(dtm_phieuMuon);
+		
+		JLabel lblMPhiuMn = new JLabel("Mã Phiếu Mượn");
+		lblMPhiuMn.setFont(new Font("Tahoma", Font.BOLD, 14));
+		lblMPhiuMn.setBounds(26, 26, 110, 25);
+		panel_UpdatePhieuMuon.add(lblMPhiuMn);
+		
+		textFieldMaPhieuMuon = new JTextField();
+		textFieldMaPhieuMuon.setEditable(false);
+		textFieldMaPhieuMuon.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textFieldMaPhieuMuon.setBounds(146, 27, 55, 23);
+		panel_UpdatePhieuMuon.add(textFieldMaPhieuMuon);
+		textFieldMaPhieuMuon.setColumns(10);
+		
+		textFieldMaBanDoc = new JTextField();
+		textFieldMaBanDoc.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textFieldMaBanDoc.setColumns(10);
+		textFieldMaBanDoc.setBounds(146, 85, 104, 23);
+		panel_UpdatePhieuMuon.add(textFieldMaBanDoc);
+		
+		JLabel lblMBnc = new JLabel("Mã Bạn Đọc");
+		lblMBnc.setFont(new Font("Tahoma", Font.BOLD, 14));
+		lblMBnc.setBounds(45, 84, 91, 25);
+		panel_UpdatePhieuMuon.add(lblMBnc);
+		
+		textFieldMaSach2 = new JTextField();
+		textFieldMaSach2.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textFieldMaSach2.setColumns(10);
+		textFieldMaSach2.setBounds(441, 27, 75, 23);
+		panel_UpdatePhieuMuon.add(textFieldMaSach2);
+		
+		JLabel lblMSch_1 = new JLabel("Mã Sách");
+		lblMSch_1.setFont(new Font("Tahoma", Font.BOLD, 14));
+		lblMSch_1.setBounds(363, 26, 68, 25);
+		panel_UpdatePhieuMuon.add(lblMSch_1);
+		
+		JLabel lblNgyMn = new JLabel("Ngày Mượn");
+		lblNgyMn.setFont(new Font("Tahoma", Font.BOLD, 14));
+		lblNgyMn.setBounds(340, 83, 91, 25);
+		panel_UpdatePhieuMuon.add(lblNgyMn);
+		
+		JLabel lblHnTr = new JLabel("Hạn Trả");
+		lblHnTr.setFont(new Font("Tahoma", Font.BOLD, 14));
+		lblHnTr.setBounds(711, 26, 61, 25);
+		panel_UpdatePhieuMuon.add(lblHnTr);
+		
+		JLabel lblNgyTr = new JLabel("Ngày Trả");
+		lblNgyTr.setFont(new Font("Tahoma", Font.BOLD, 14));
+		lblNgyTr.setBounds(704, 83, 68, 25);
+		panel_UpdatePhieuMuon.add(lblNgyTr);
+		
+		JDateChooser dateChooserHanTra = new JDateChooser();
+		dateChooserHanTra.setBounds(797, 26, 130, 20);
+		panel_UpdatePhieuMuon.add(dateChooserHanTra);
+		
+		JDateChooser dateChooserNgayTra = new JDateChooser();
+		dateChooserNgayTra.setBounds(797, 85, 130, 20);
+		panel_UpdatePhieuMuon.add(dateChooserNgayTra);
+		
+		JDateChooser dateChooserNgayMuon = new JDateChooser();
+		dateChooserNgayMuon.setBounds(441, 85, 130, 20);
+		panel_UpdatePhieuMuon.add(dateChooserNgayMuon);
+		
+		//Xử lý button thêm phiếu mượn
+		JButton btnThemPhieuMuon = new JButton("Thêm Phiếu Mượn");
+		btnThemPhieuMuon.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				//Lấy Ngày mượn
+				String NgayMuon = outputDate(dateChooserNgayMuon);
+				
+				//Lấy Hạn trả
+				String HanTra = outputDate(dateChooserHanTra);
+				
+				//Lấy Mã Bạn Đọc
+				int MaBanDoc = Integer.parseInt(textFieldMaBanDoc.getText());
+				
+				//Lấy Mã Sách
+				int MaSach = Integer.parseInt(textFieldMaSach2.getText());
+				
+				//Lấy Mã Bạn Đọc Hiện Hành
+				try {
+					int MaBanDocHienHanh;
+					MaBanDocHienHanh = member.xuatMaHienHanh();
+					//Gọi hàm nhập phiếu mượn
+					phieu_muon.nhapPhieuMuon(NgayMuon, MaSach, HanTra, MaBanDoc, MaBanDocHienHanh);
+					//Gọi hàm Update Table
+					updateTable(tableUpdatePhieuMuon, "tableUpdatePhieuMuon");
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			}
+		});
+		btnThemPhieuMuon.setFont(new Font("Tahoma", Font.BOLD, 12));
+		btnThemPhieuMuon.setBounds(340, 174, 147, 46);
+		panel_UpdatePhieuMuon.add(btnThemPhieuMuon);
+		
+		JButton btnXoaPhieuMuon = new JButton("Xóa Phiếu Mượn");
+		btnXoaPhieuMuon.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int MaPhieuMuon =  Integer.parseInt(textFieldMaPhieuMuon.getText());
+				try {
+					phieu_muon.xoaPhieuMuon(MaPhieuMuon);
+					updateTable(tableUpdatePhieuMuon, "tableUpdatePhieuMuon");
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		btnXoaPhieuMuon.setEnabled(false);
+		btnXoaPhieuMuon.setFont(new Font("Tahoma", Font.BOLD, 12));
+		btnXoaPhieuMuon.setBounds(549, 174, 147, 46);
+		panel_UpdatePhieuMuon.add(btnXoaPhieuMuon);
+		
+		JButton btnSuaPhieuMuon = new JButton("Sửa Phiếu Mượn");
+		btnSuaPhieuMuon.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int MaPhieuMuon = Integer.parseInt(textFieldMaPhieuMuon.getText());
+				int MaSach = Integer.parseInt(textFieldMaSach2.getText());
+				String Ngay_Muon = outputDate(dateChooserNgayMuon);
+				String Han_Tra = outputDate(dateChooserHanTra);
+				String Ngay_Tra = outputDate(dateChooserNgayTra);
+				try {
+					phieu_muon.suaPhieuMuon(MaPhieuMuon, MaSach, Ngay_Muon, Han_Tra, Ngay_Tra);
+					updateTable(tableUpdatePhieuMuon, "tableUpdatePhieuMuon");
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		btnSuaPhieuMuon.setEnabled(false);
+		btnSuaPhieuMuon.setFont(new Font("Tahoma", Font.BOLD, 12));
+		btnSuaPhieuMuon.setBounds(759, 174, 147, 46);
+		panel_UpdatePhieuMuon.add(btnSuaPhieuMuon);
+		
+		JButton btnTraSach = new JButton("Trả Sách");
+		btnTraSach.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int MaPhieuMuon = Integer.parseInt(textFieldMaPhieuMuon.getText());
+				try {
+					//Lấy ngày hiện tại
+					DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");  
+					LocalDateTime now = LocalDateTime.now();  		
+					String dateReturn = dtf.format(now);
+					
+					phieu_muon.traSach(MaPhieuMuon, dateReturn);
+					updateTable(tableUpdatePhieuMuon, "tableUpdatePhieuMuon");
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		btnTraSach.setEnabled(false);
+		btnTraSach.setFont(new Font("Tahoma", Font.BOLD, 12));
+		btnTraSach.setBounds(975, 174, 147, 46);
+		panel_UpdatePhieuMuon.add(btnTraSach);
+		
+		JRadioButton rdbtnThemPhieuMuon = new JRadioButton("Thêm phiếu mượn");
+		rdbtnThemPhieuMuon.setSelected(true);
+		rdbtnThemPhieuMuon.setFont(new Font("Tahoma", Font.BOLD, 12));
+		rdbtnThemPhieuMuon.setBounds(26, 174, 137, 23);
+		panel_UpdatePhieuMuon.add(rdbtnThemPhieuMuon);
+		
+		JRadioButton rdbtnXoaSuaTraPhieuMuon = new JRadioButton("Xóa, Sửa phiếu mượn / Trả sách");
+		rdbtnXoaSuaTraPhieuMuon.setFont(new Font("Tahoma", Font.BOLD, 12));
+		rdbtnXoaSuaTraPhieuMuon.setBounds(26, 215, 224, 23);
+		
+		ButtonGroup group2 = new ButtonGroup();
+        group2.add(rdbtnThemPhieuMuon);
+        group2.add(rdbtnXoaSuaTraPhieuMuon);
+        
+        rdbtnThemPhieuMuon.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(rdbtnThemPhieuMuon.isSelected() == true)
+		        {
+		        	btnThemPhieuMuon.setEnabled(true);
+		        	btnSuaPhieuMuon.setEnabled(false);
+		        	btnXoaPhieuMuon.setEnabled(false);
+		        	btnTraSach.setEnabled(false);
+		        	
+		        	textFieldMaPhieuMuon.setText("");
+		        	textFieldMaBanDoc.setText("");
+		        	textFieldMaSach2.setText("");
+		        }
+			}
+		});
+        
+        rdbtnXoaSuaTraPhieuMuon.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(rdbtnXoaSuaTraPhieuMuon.isSelected() == true)
+		        {
+					btnThemPhieuMuon.setEnabled(false);
+		        	btnSuaPhieuMuon.setEnabled(true);
+		        	btnXoaPhieuMuon.setEnabled(true);
+		        	btnTraSach.setEnabled(true);
+		        	
+		        	//Lấy dữ liệu từ table xuất ra textfield
+					tableUpdatePhieuMuon.addMouseListener(new MouseAdapter() 
+					{
+						@Override
+						public void mouseClicked (MouseEvent e) 
+						{
+							int row = tableUpdatePhieuMuon.getSelectedRow();
+							textFieldMaPhieuMuon.setText((String)tableUpdatePhieuMuon.getModel().getValueAt(row, 0));
+							textFieldMaBanDoc.setText((String)tableUpdatePhieuMuon.getModel().getValueAt(row, 1));
+							textFieldMaSach2.setText((String)tableUpdatePhieuMuon.getModel().getValueAt(row, 2));
+						}
+					});
+		        }
+			}
+		});
+        
+		panel_UpdatePhieuMuon.add(rdbtnXoaSuaTraPhieuMuon);
+
+		// Align row center 
+		DefaultTableCellRenderer centerRenderer_PhieuMuon = new DefaultTableCellRenderer();
+		centerRenderer.setHorizontalAlignment( JLabel.CENTER );
+		for(int x=0; x<7; x++)
+		{
+			tableUpdatePhieuMuon.getColumnModel().getColumn(x).setCellRenderer( centerRenderer );
+		}
+		scrollPane.setViewportView(tableUpdateSach);
+		
+		JPanel panel_UpdateAdmin = new JPanel();
+		tabbedPaneUpdateSach.addTab("Admin", null, panel_UpdateAdmin, null);
+		panel_UpdateAdmin.setLayout(null);
+		
+		JScrollPane scrollPane_2 = new JScrollPane();
+		scrollPane_2.setBounds(575, 5, 2, 2);
+		panel_UpdateAdmin.add(scrollPane_2);
+		
+		JScrollPane scrollPane_3 = new JScrollPane();
+		scrollPane_3.setBounds(582, 5, 2, 2);
+		panel_UpdateAdmin.add(scrollPane_3);
+		
+		JScrollPane scrollPane_4 = new JScrollPane();
+		scrollPane_4.setBounds(0, 238, 1159, 373);
+		panel_UpdateAdmin.add(scrollPane_4);
+		
+		tableAdminUpdate = new JTable();
+		tableAdminUpdate.setModel(new DefaultTableModel(
+			new Object[][] {
+			},
+			new String[] {
+				"Username", "Password", "Ma Admin"
+			}
+		));
+		
+		scrollPane_4.setViewportView(tableAdminUpdate);
+		// Set row height
+		tableAdminUpdate.setRowHeight(30);
+		
+		//----------set variable table as DefaultTableModel and add row--------------------
+		DefaultTableModel dtm_admin = (DefaultTableModel) tableAdminUpdate.getModel();
+		
+		//Xuất danh sách data của admin ra table admin
+		dtm_admin = admin.xuatTable(dtm_admin);
+		
+		JLabel label = new JLabel("Username");
+		label.setFont(new Font("Tahoma", Font.BOLD, 14));
+		label.setBounds(41, 52, 83, 17);
+		panel_UpdateAdmin.add(label);
+		
+		textField = new JTextField();
+		textField.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textField.setColumns(10);
+		textField.setBounds(134, 43, 111, 35);
+		panel_UpdateAdmin.add(textField);
+		
+		JLabel lblPassword = new JLabel("Password");
+		lblPassword.setFont(new Font("Tahoma", Font.BOLD, 14));
+		lblPassword.setBounds(41, 107, 83, 17);
+		panel_UpdateAdmin.add(lblPassword);
+		
+		textFieldAdminPassword = new JTextField();
+		textFieldAdminPassword.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textFieldAdminPassword.setColumns(10);
+		textFieldAdminPassword.setBounds(134, 98, 111, 35);
+		panel_UpdateAdmin.add(textFieldAdminPassword);
+		
+		JLabel lblMAdmin = new JLabel("Mã Admin");
+		lblMAdmin.setFont(new Font("Tahoma", Font.BOLD, 14));
+		lblMAdmin.setBounds(326, 52, 83, 17);
+		panel_UpdateAdmin.add(lblMAdmin);
+		
+		textFieldMaAdmin = new JTextField();
+		textFieldMaAdmin.setEditable(false);
+		textFieldMaAdmin.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textFieldMaAdmin.setColumns(10);
+		textFieldMaAdmin.setBounds(419, 43, 111, 35);
+		panel_UpdateAdmin.add(textFieldMaAdmin);
+		
+		JRadioButton rdbtnrdbtnThemAdmin = new JRadioButton("Thêm admin");
+		rdbtnrdbtnThemAdmin.setBounds(41, 161, 109, 23);
+		panel_UpdateAdmin.add(rdbtnrdbtnThemAdmin);
+		
+		JRadioButton rdbtnXoaSuaAdmin = new JRadioButton("Xóa, Sửa Admin");
+		rdbtnXoaSuaAdmin.setBounds(41, 193, 109, 23);
+		panel_UpdateAdmin.add(rdbtnXoaSuaAdmin);
+		
+		ButtonGroup btgAdmin = new ButtonGroup();
+		btgAdmin.add(rdbtnrdbtnThemAdmin);
+		btgAdmin.add(rdbtnXoaSuaAdmin);
 
 	}
 }

@@ -219,76 +219,76 @@ public class member_form extends JFrame {
 		textFieldMaBanDoc.setText(Integer.toString(member.xuatMaHienHanh()));
 		
 		//Xử lý nhập phiếu mượn
-				JButton btnLapPhieuMuon = new JButton("Lập phiếu mượn");
-				btnLapPhieuMuon.setFont(new Font("Tahoma", Font.BOLD, 16));
-				btnLapPhieuMuon.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						DateFormat df = new SimpleDateFormat("d-M-YYYY");
-						textFieldNgayMuon.setText(df.format(dateChooser.getDate()));
-						
-						//Lấy ngày mượn sách		
-						DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");  
-						LocalDateTime now = LocalDateTime.now();  		
-						String dateBorrow = dtf.format(now);
-						//Lấy hạn trả sách
-						Date dateReturn = dateChooser.getDate();
-						LocalDateTime ldt = LocalDateTime.ofInstant(dateReturn.toInstant(), ZoneId.systemDefault());
-						String dateReturnAsString = dtf.format(ldt);
-						//Lấy mã sách
-						int MaSach = (Integer) spinnerMaSach.getValue();
-						
-						try {
-							int MaBanDoc = member.xuatMaHienHanh();	
-							//Nếu số lượng tồn của sách được chọn = 0, không cho mượn 
-							if(sach.soLuongTon(MaSach) == 0)
-							{
-								JOptionPane.showMessageDialog(null, "Hết Sách!");
-							}
-							//Kiểm tra sách đã mượn hay chưa
-							//Lấy mã bạn đọc hiện hành
-							else if (phieu_muon.kiemTraDaMuon(MaSach, MaBanDoc) != null)
-							{
-								JOptionPane.showMessageDialog(null, "Sách Đã Mượn!");
-							}
-							//Thỏa đk sẽ cho mượn sách
-							else if( MaSach != 0 && dateReturn != null)
-							{
-								try {
-									//Lấy mã bạn đọc hiện hành
-									int MaBanDoc1 = member.xuatMaHienHanh();	
-									//gọi hàm nhập phiếu mượn
-									phieu_muon.nhapPhieuMuon(dateBorrow, MaSach, dateReturnAsString, MaBanDoc, MaBanDoc);
-									//gọi hàm trừ 1 sách tồn
-									sach.xoaMotSach(MaSach);
-									//thông báo
-									JOptionPane.showMessageDialog(null, "Mượn thành công");
-								} catch (ClassNotFoundException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								} catch (SQLException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								}									
-							}
-						} catch (HeadlessException e2) {
-							// TODO Auto-generated catch block
-							e2.printStackTrace();
-						} catch (ClassNotFoundException e2) {
-							// TODO Auto-generated catch block
-							e2.printStackTrace();
-						} catch (SQLException e2) {
-							// TODO Auto-generated catch block
-							e2.printStackTrace();
-						}
-						
+		JButton btnLapPhieuMuon = new JButton("Lập phiếu mượn");
+		btnLapPhieuMuon.setFont(new Font("Tahoma", Font.BOLD, 16));
+		btnLapPhieuMuon.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DateFormat df = new SimpleDateFormat("d-M-YYYY");
+				textFieldNgayMuon.setText(df.format(dateChooser.getDate()));
+				
+				//Lấy ngày mượn sách		
+				DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");  
+				LocalDateTime now = LocalDateTime.now();  		
+				String dateBorrow = dtf.format(now);
+				//Lấy hạn trả sách
+				Date dateReturn = dateChooser.getDate();
+				LocalDateTime ldt = LocalDateTime.ofInstant(dateReturn.toInstant(), ZoneId.systemDefault());
+				String dateReturnAsString = dtf.format(ldt);
+				//Lấy mã sách
+				int MaSach = (Integer) spinnerMaSach.getValue();
+				
+				try {
+					int MaBanDoc = member.xuatMaHienHanh();	
+					//Nếu số lượng tồn của sách được chọn = 0, không cho mượn 
+					if(sach.soLuongTon(MaSach) == 0)
+					{
+						JOptionPane.showMessageDialog(null, "Hết Sách!");
 					}
-				});
-				btnLapPhieuMuon.setBounds(372, 170, 178, 54);
-				panel_lap_phieu_muon.add(btnLapPhieuMuon);
+					//Kiểm tra sách đã mượn hay chưa
+					//Lấy mã bạn đọc hiện hành
+					else if (phieu_muon.kiemTraDaMuon(MaSach, MaBanDoc) != null)
+					{
+						JOptionPane.showMessageDialog(null, "Sách Đã Mượn!");
+					}
+					//Thỏa đk sẽ cho mượn sách
+					else if( MaSach != 0 && dateReturn != null)
+					{
+						try {
+							//Lấy mã bạn đọc hiện hành
+							int MaBanDoc1 = member.xuatMaHienHanh();	
+							//gọi hàm nhập phiếu mượn
+							phieu_muon.nhapPhieuMuon(dateBorrow, MaSach, dateReturnAsString, MaBanDoc, MaBanDoc);
+							//gọi hàm trừ 1 sách tồn
+							sach.xoaMotSach(MaSach);
+							//thông báo
+							JOptionPane.showMessageDialog(null, "Mượn thành công");
+						} catch (ClassNotFoundException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (SQLException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}									
+					}
+				} catch (HeadlessException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				} catch (ClassNotFoundException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				} catch (SQLException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
 				
-				
-				
-				panel_lap_phieu_muon.add(textFieldMaBanDoc);
+			}
+		});
+		btnLapPhieuMuon.setBounds(372, 170, 178, 54);
+		panel_lap_phieu_muon.add(btnLapPhieuMuon);
+		
+		
+		
+		panel_lap_phieu_muon.add(textFieldMaBanDoc);
 		 
 	}
 }

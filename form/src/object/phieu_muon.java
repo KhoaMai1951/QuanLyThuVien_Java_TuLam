@@ -23,7 +23,6 @@ public class phieu_muon {
 	public Date Han_Tra;  
 	public Date Ngay_Tra;  
 	
-	 
 	public void Phieu_Muon() 
 	{
 	}
@@ -65,7 +64,7 @@ public class phieu_muon {
 		String sql = "UPDATE phieu_muon SET Ma_Ban_Doc_Hien_Hanh = '"+ma_hien_hanh+"'";
 		int resultSet = statement.executeUpdate(sql);
 	}
-	//Xuất table thông tin phiếu mượn
+	//Xuất table thông tin phiếu mượn cho bảng Bạn Đọc
 	public static DefaultTableModel xuatTable(DefaultTableModel dtm)
 	{
 		Connection conn = null;
@@ -110,9 +109,57 @@ public class phieu_muon {
 		}
 		return dtm;
 	}
+	
+	//Xuất table thông tin phiếu mượn cho bảng Admin Update phiếu mượn
+	public static DefaultTableModel xuatTableAdminUpdate(DefaultTableModel dtm)
+	{
+		Connection conn = null;
+		try {
+			conn = QLCSDL.connect();
+		} catch (ClassNotFoundException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 java.sql.Statement statement = null;
+		try {
+			statement = ((java.sql.Connection) conn).createStatement();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 String sql = "SELECT * FROM phieu_muon WHERE Da_Xoa = 0";
+		 ResultSet resultSet = null;
+		try {
+			resultSet = statement.executeQuery(sql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 try {
+			while (resultSet.next()) 
+			 {
+				 Vector v = new Vector(); 
+				 v.add(resultSet.getString("Ma_Phieu_Muon"));
+				 v.add(resultSet.getString("Ma_Ban_Doc"));
+				 v.add(resultSet.getString("Ma_Sach"));
+				 v.add(resultSet.getString("Ngay_Muon"));
+				 v.add(resultSet.getString("Han_Tra"));
+				 v.add(resultSet.getString("Ngay_Tra"));
+				 String zero = "0";
+				 if(resultSet.getInt("Tra_Sach") == 0)
+					 v.add("Chưa trả sách");
+				 if(resultSet.getInt("Tra_Sach") == 1)
+					 v.add("Đã trả sách");
+				 dtm.addRow(v);
+			 }
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return dtm;
+	}
 
 	//Nhập dữ liệu phiếu mượn mới từ form người đọc
-	//, String dateReturn, int maSach, int maBanDoc
 	public static void nhapPhieuMuon(String dateBorrow, int MaSach, String dateReturn,
 			int MaBanDoc, int MaBanDocHienHanh) throws ClassNotFoundException, SQLException
 	{
@@ -145,6 +192,39 @@ public class phieu_muon {
 		}
 		 
 		return phieu_muon;
+	}
+	
+	// Xóa phiếu mượn
+	public static void xoaPhieuMuon(int MaPhieuMuon) throws ClassNotFoundException, SQLException
+	{
+		Connection conn = QLCSDL.connect();
+		java.sql.Statement statement = ((java.sql.Connection) conn).createStatement();
+		String sql = "UPDATE phieu_muon SET Da_Xoa = 1 WHERE Ma_Phieu_Muon = "+MaPhieuMuon+"" ;
+		int resultSet = statement.executeUpdate(sql);
+		if(resultSet > 0)
+			JOptionPane.showMessageDialog(null, "Xóa phiếu mượn thành công!");
+	}
+	
+	// Trả sách
+	public static void traSach(int MaPhieuMuon, String NgayTra) throws ClassNotFoundException, SQLException
+	{
+		Connection conn = QLCSDL.connect();
+		java.sql.Statement statement = ((java.sql.Connection) conn).createStatement();
+		String sql = "UPDATE phieu_muon SET Tra_Sach = 1, Ngay_Tra = '"+NgayTra+"' WHERE Ma_Phieu_Muon = "+MaPhieuMuon+"" ;
+		int resultSet = statement.executeUpdate(sql);
+		if(resultSet > 0)
+			JOptionPane.showMessageDialog(null, "Trả sách thành công!");
+	}
+	
+	// Sửa thông tin phiếu mượn
+	public static void suaPhieuMuon(int MaPhieuMuon, int MaSach, String Ngay_Muon, String Han_Tra, String Ngay_Tra ) throws ClassNotFoundException, SQLException 
+	{
+		Connection conn = QLCSDL.connect();
+		java.sql.Statement statement = ((java.sql.Connection) conn).createStatement();
+		String sql = "UPDATE phieu_muon SET Ma_Sach = "+MaSach+", Ngay_Muon = '"+Ngay_Muon+"', Han_Tra = '"+Han_Tra+"', Ngay_Tra = '"+Ngay_Tra+"' WHERE Ma_Phieu_Muon = "+MaPhieuMuon+"" ;
+		int resultSet = statement.executeUpdate(sql);
+		if(resultSet > 0)
+			JOptionPane.showMessageDialog(null, "Sửa thông tin phiếu mượn thành công!");
 	}
 	
 	public static int xuatPhieuMuon(){

@@ -9,6 +9,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.JButton;
 import java.awt.Font;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.awt.event.ActionEvent;
 
 public class admin_function extends JFrame {
@@ -46,7 +47,16 @@ public class admin_function extends JFrame {
 		JButton btnUpdate = new JButton("C\u1EADp Nh\u1EADt");
 		btnUpdate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				admin_update_form form = new admin_update_form();
+				admin_update_form form = null;
+				try {
+					form = new admin_update_form();
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				form.setVisible(true);
 			}
 		});

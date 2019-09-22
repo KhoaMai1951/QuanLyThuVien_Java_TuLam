@@ -3,6 +3,9 @@ package object;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Vector;
+
+import javax.swing.table.DefaultTableModel;
 
 import bussiness.QLCSDL;
 
@@ -60,5 +63,33 @@ public class admin {
 	 }
 	 
 	 return admin;
+	}
+	
+	//Xuất table admin cho table admin
+	public static DefaultTableModel xuatTable(DefaultTableModel dtm) throws ClassNotFoundException, SQLException
+	{
+		Connection conn = null;
+		
+		conn = QLCSDL.connect();
+		
+		java.sql.Statement statement = null;
+		
+		statement = ((java.sql.Connection) conn).createStatement();
+		
+		String sql = "SELECT * FROM quan_tri";
+		ResultSet resultSet = null;
+		
+		resultSet = statement.executeQuery(sql);
+		
+		
+		while (resultSet.next()) 
+		 {
+			 Vector v = new Vector();
+			 v.add(resultSet.getString("username"));
+			 v.add(resultSet.getString("password"));
+			 v.add(resultSet.getString("Ma_Admin"));
+			 dtm.addRow(v);
+		 }
+		return dtm;
 	}
 }
