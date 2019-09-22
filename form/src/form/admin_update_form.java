@@ -744,7 +744,7 @@ public class admin_update_form extends JFrame {
 		DefaultTableModel dtm_member = (DefaultTableModel) tableMemberUpdate.getModel();		
 						
 		//Xuất danh sách data member ra table
-		dtm_member = sach.xuatTable(dtm_member);
+		dtm_member = member.xuatTable(dtm_member);
 		
 		JLabel label_1 = new JLabel("Username");
 		label_1.setFont(new Font("Tahoma", Font.BOLD, 14));

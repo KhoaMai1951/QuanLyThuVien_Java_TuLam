@@ -132,7 +132,7 @@ public class member {
 	
 	statement = ((java.sql.Connection) conn).createStatement();
 	
-	String sql = "SELECT * FROM member WHERE da_xoa = 0";
+	String sql = "SELECT * FROM ban_doc WHERE da_xoa = 0";
 	ResultSet resultSet = null;
 	
 	resultSet = statement.executeQuery(sql);
@@ -140,12 +140,13 @@ public class member {
 	while (resultSet.next()) 
 	{
 	 Vector v = new Vector();
-	 v.add(resultSet.getString("Ma_Sach"));
-	 v.add(resultSet.getString("Ten_Sach"));
-	 v.add(resultSet.getString("Ten_Tac_Gia"));
-	 v.add(resultSet.getString("Nha_XB"));
-	 v.add(resultSet.getString("Gia_Tien"));
-	 v.add(resultSet.getString("So_Luong"));
+	 v.add(resultSet.getString("Ma_Ban_Doc"));
+	 v.add(resultSet.getString("username"));
+	 v.add(resultSet.getString("password"));
+	 v.add(resultSet.getString("Ten_Ban_Doc"));
+	 v.add(resultSet.getString("Ngay_Sinh"));
+	 v.add(resultSet.getString("Dia_Chi"));
+	 v.add(resultSet.getString("Dien_Thoai"));
 	 dtm.addRow(v);
 	}
 	
