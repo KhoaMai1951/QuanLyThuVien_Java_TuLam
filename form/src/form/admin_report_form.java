@@ -78,6 +78,7 @@ public class admin_report_form extends JFrame {
 		JLabel labelSoSach;
 		try {
 			labelSoSach = new JLabel(sach.xuatSoSach());
+			
 			labelSoSach.setFont(new Font("Tahoma", Font.BOLD, 14));
 			labelSoSach.setBounds(195, 66, 71, 32);
 			contentPane.add(labelSoSach);
