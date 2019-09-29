@@ -5,6 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
 
 import bussiness.QLCSDL;
@@ -104,6 +106,70 @@ public class member {
 			return name;
 		}
 		return "";
+	}
+	
+	//Xóa bạn đọc
+	public static void xoaBanDoc(int MaBanDoc) throws ClassNotFoundException, SQLException
+	{
+		Connection conn = QLCSDL.connect();
+		java.sql.Statement statement = ((java.sql.Connection) conn).createStatement();
+		String sql = "UPDATE ban_doc SET Da_Xoa = 1 WHERE Ma_Ban_Doc = "+MaBanDoc+";";
+		int resultSet = statement.executeUpdate(sql);
+		if(resultSet>0)
+		{
+			JOptionPane.showMessageDialog(null,
+					"Xóa bạn đọc thành công");
+		}
+	}
+	
+	//Sửa bạn đọc
+	public static void suaBanDoc(int MaBanDoc, String username, String password, String TenBanDoc,
+			String DiaChi, String SDT, String NgaySinh) throws ClassNotFoundException, SQLException
+	{
+		Connection conn = QLCSDL.connect();
+		java.sql.Statement statement = ((java.sql.Connection) conn).createStatement();
+		String sql = "UPDATE ban_doc SET Username = '"+username+"', Password = '"+password+"', "
+				+ "Ten_Ban_Doc = '"+TenBanDoc+"', Dia_Chi= '"+DiaChi+"', Dien_Thoai ='"+SDT+"', "
+						+ "Ngay_Sinh='"+NgaySinh+"'  WHERE Ma_Ban_Doc = '"+MaBanDoc+"'";
+		int resultSet = statement.executeUpdate(sql);
+		if(resultSet>0)
+		{
+			JOptionPane.showMessageDialog(null,
+					"Sửa bạn đọc thành công");
+		}
+	}
+	
+	//Thêm bạn đọc
+	public static void themBanDoc(String username, String password, String TenBanDoc,
+			String DiaChi, String SDT, String NgaySinh) throws ClassNotFoundException, SQLException
+	{
+		Connection conn = QLCSDL.connect();
+		java.sql.Statement statement = ((java.sql.Connection) conn).createStatement();
+		
+		
+		String sql = "INSERT INTO ban_doc (Username, Password, Ten_Ban_Doc, Dia_Chi, Dien_Thoai, Ngay_Sinh ) VALUES ('"+username+"', '"+password+"', '"+TenBanDoc+"', '"+DiaChi+"', '"+SDT+"', '"+NgaySinh+"');";
+		int resultSet = statement.executeUpdate(sql);
+		if(resultSet>0)
+		{
+			JOptionPane.showMessageDialog(null,
+					"Thêm bạn đọc thành công");
+		}
+	}
+	
+	//SELECT COUNT(Ma_Ban_Doc) FROM ban_doc WHERE Da_Xoa = 0
+	//Xuất số lượng bạn đọc 
+	public static int xuatSoBanDoc() throws ClassNotFoundException, SQLException 
+	{
+		Connection conn = QLCSDL.connect();
+		java.sql.Statement statement = ((java.sql.Connection) conn).createStatement();
+		String sql = "SELECT COUNT(Ma_Ban_Doc) FROM ban_doc WHERE Da_Xoa = 0";
+		ResultSet resultSet = statement.executeQuery(sql);
+		if(resultSet.next())
+		{
+			int num = resultSet.getInt("COUNT(Ma_Ban_Doc)");
+			return num;
+		}
+		return 0;
 	}
 	
 	//Xuất mã bạn đọc hiện hành

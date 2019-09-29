@@ -187,4 +187,18 @@ public class sach {
 		}
 		return dtm;
 	}
+	//Xuất số sách
+	public static String xuatSoSach() throws ClassNotFoundException, SQLException 
+	{
+		Connection conn = QLCSDL.connect();
+		java.sql.Statement statement = ((java.sql.Connection) conn).createStatement();
+		String sql = "SELECT COUNT(Ma_Sach) FROM sach WHERE Da_Xoa = 0";
+		ResultSet resultSet = statement.executeQuery(sql);
+		if(resultSet.next())
+		{
+			String num = Integer.toString(resultSet.getInt("COUNT(Ma_Sach)"));
+			return num;
+		}
+		return null;
+	}
 }

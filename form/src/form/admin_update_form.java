@@ -1,50 +1,41 @@
 package form;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
+import javax.swing.ButtonGroup;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+
+import com.toedter.calendar.JDateChooser;
 
 import object.admin;
 import object.member;
 import object.phieu_muon;
 import object.sach;
-
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.JButton;
-import java.awt.Font;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.ButtonGroup;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import java.awt.Panel;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.awt.event.ActionEvent;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.JTextField;
-import com.toedter.calendar.JDateChooser;
-import java.awt.Button;
 
 public class admin_update_form extends JFrame {
 
@@ -67,7 +58,7 @@ public class admin_update_form extends JFrame {
 	private JTable tableMemberUpdate;
 	private JTextField textFieldUsernameBanDoc;
 	private JTextField textFieldPasswordBanDoc;
-	private JTextField textField;
+	private JTextField textFieldTenBanDoc;
 	private JTextField textFieldDiaChiMember;
 	private JTextField textFieldDienThoaiMember;
 	private JTextField textFieldMaBanDocUpdateBanDoc;
@@ -117,6 +108,10 @@ public class admin_update_form extends JFrame {
 			case "tableAdminUpdate":
 				//Xuất danh sách data sách ra table
 				dtm_sach = admin.xuatTable(dtm_sach);
+				break;
+			case "tableMemberUpdate":
+				//Xuất danh sách data sách ra table
+				dtm_sach = member.xuatTable(dtm_sach);
 				break;
 		}
 	}
@@ -773,11 +768,11 @@ public class admin_update_form extends JFrame {
 		lblTnBnc.setBounds(313, 59, 100, 17);
 		panel_BanDoc.add(lblTnBnc);
 		
-		textField = new JTextField();
-		textField.setFont(new Font("Tahoma", Font.BOLD, 14));
-		textField.setColumns(10);
-		textField.setBounds(423, 50, 111, 35);
-		panel_BanDoc.add(textField);
+		textFieldTenBanDoc = new JTextField();
+		textFieldTenBanDoc.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textFieldTenBanDoc.setColumns(10);
+		textFieldTenBanDoc.setBounds(423, 50, 111, 35);
+		panel_BanDoc.add(textFieldTenBanDoc);
 		
 		JLabel lblNgySinh = new JLabel("Ngày Sinh");
 		lblNgySinh.setFont(new Font("Tahoma", Font.BOLD, 14));
@@ -816,10 +811,143 @@ public class admin_update_form extends JFrame {
 		panel_BanDoc.add(lblMBnc_1);
 		
 		textFieldMaBanDocUpdateBanDoc = new JTextField();
+		textFieldMaBanDocUpdateBanDoc.setEditable(false);
 		textFieldMaBanDocUpdateBanDoc.setFont(new Font("Tahoma", Font.BOLD, 14));
 		textFieldMaBanDocUpdateBanDoc.setColumns(10);
 		textFieldMaBanDocUpdateBanDoc.setBounds(1018, 112, 74, 35);
 		panel_BanDoc.add(textFieldMaBanDocUpdateBanDoc);
+		
+		JRadioButton rdbtnThemBanDoc = new JRadioButton("Thêm bạn đọc");
+		rdbtnThemBanDoc.setFont(new Font("Tahoma", Font.BOLD, 14));
+		rdbtnThemBanDoc.setSelected(true);
+		rdbtnThemBanDoc.setBounds(40, 201, 146, 23);
+		panel_BanDoc.add(rdbtnThemBanDoc);
+		
+		JRadioButton rdbtnXoaSuaBanDoc = new JRadioButton("Xóa Sửa bạn đọc");
+		rdbtnXoaSuaBanDoc.setFont(new Font("Tahoma", Font.BOLD, 14));
+		rdbtnXoaSuaBanDoc.setBounds(40, 237, 157, 23);
+		panel_BanDoc.add(rdbtnXoaSuaBanDoc);
+		
+		ButtonGroup btgBanDoc = new ButtonGroup();
+		btgBanDoc.add(rdbtnThemBanDoc);
+		btgBanDoc.add(rdbtnXoaSuaBanDoc);
+
+		JButton btnThemBanDoc = new JButton("THÊM");
+		btnThemBanDoc.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String username = textFieldUsernameBanDoc.getText();
+				String password = textFieldPasswordBanDoc.getText();
+				String TenBanDoc = textFieldTenBanDoc.getText();
+				String DiaChi = textFieldDiaChiMember.getText();
+				String SDT = textFieldDienThoaiMember.getText();
+				String NgaySinh = outputDate(dateChooserNgaySinhBanDoc);
+				
+				try {
+					member.themBanDoc(username, password, TenBanDoc, DiaChi, SDT, NgaySinh);
+					updateTable(tableMemberUpdate, "tableMemberUpdate");
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		btnThemBanDoc.setFont(new Font("Tahoma", Font.BOLD, 14));
+		btnThemBanDoc.setBounds(313, 187, 89, 39);
+		panel_BanDoc.add(btnThemBanDoc);
+		
+		JButton btnXoaBanDoc = new JButton("XÓA");
+		btnXoaBanDoc.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int MaBanDoc = Integer.parseInt(textFieldMaBanDocUpdateBanDoc.getText());
+				try {
+					member.xoaBanDoc(MaBanDoc);
+					updateTable(tableMemberUpdate, "tableMemberUpdate");
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		btnXoaBanDoc.setEnabled(false);
+		btnXoaBanDoc.setFont(new Font("Tahoma", Font.BOLD, 14));
+		btnXoaBanDoc.setBounds(445, 187, 89, 39);
+		panel_BanDoc.add(btnXoaBanDoc);
+		
+		JButton btnSuaBanDoc = new JButton("SỬA");
+		btnSuaBanDoc.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int MaBanDoc = Integer.parseInt(textFieldMaBanDocUpdateBanDoc.getText());
+				String username = textFieldUsernameBanDoc.getText();
+				String password = textFieldPasswordBanDoc.getText();
+				String TenBanDoc = textFieldTenBanDoc.getText();
+				String DiaChi = textFieldDiaChiMember.getText();
+				String SDT = textFieldDienThoaiMember.getText();
+				String NgaySinh = outputDate(dateChooserNgaySinhBanDoc);
+				
+				try {
+					member.suaBanDoc(MaBanDoc, username, password, TenBanDoc, DiaChi, SDT, NgaySinh);
+					updateTable(tableMemberUpdate, "tableMemberUpdate");
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		btnSuaBanDoc.setEnabled(false);
+		btnSuaBanDoc.setFont(new Font("Tahoma", Font.BOLD, 14));
+		btnSuaBanDoc.setBounds(567, 187, 89, 39);
+		panel_BanDoc.add(btnSuaBanDoc);
+		
+		rdbtnThemBanDoc.addActionListener(new ActionListener() {
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	        	btnThemBanDoc.setEnabled(true);
+	            btnXoaBanDoc.setEnabled(false);
+	            btnSuaBanDoc.setEnabled(false);
+	            
+	            textFieldUsernameBanDoc.setText("");
+	            textFieldPasswordBanDoc.setText("");
+	            textFieldTenBanDoc.setText("");
+	            textFieldDiaChiMember.setText("");
+	            textFieldDienThoaiMember.setText("");
+	            textFieldMaBanDocUpdateBanDoc.setText("");
+	        }
+	    });
+		
+		rdbtnXoaSuaBanDoc.addActionListener(new ActionListener() {
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	            btnThemBanDoc.setEnabled(false);
+	            btnXoaBanDoc.setEnabled(true);
+	            btnSuaBanDoc.setEnabled(true);
+	            
+	           
+	        }
+	    });
+					
+		 tableMemberUpdate.addMouseListener(new MouseAdapter() {
+			  public void mouseClicked(MouseEvent e) {
+				  if(rdbtnXoaSuaBanDoc.isEnabled())
+					{
+					int row = tableMemberUpdate.getSelectedRow();
+					textFieldMaBanDocUpdateBanDoc.setText((String)tableMemberUpdate.getModel().getValueAt(row, 0));
+					textFieldUsernameBanDoc.setText((String)tableMemberUpdate.getModel().getValueAt(row, 1));
+					textFieldPasswordBanDoc.setText((String)tableMemberUpdate.getModel().getValueAt(row, 2));
+					textFieldTenBanDoc.setText((String)tableMemberUpdate.getModel().getValueAt(row, 3));
+					textFieldDiaChiMember.setText((String)tableMemberUpdate.getModel().getValueAt(row, 5));
+					textFieldDienThoaiMember.setText((String)tableMemberUpdate.getModel().getValueAt(row, 6)); 
+					}	 
+			  }
+			});
 		
 		JPanel panel_UpdateAdmin = new JPanel();
 		tabbedPaneUpdateSach.addTab("Admin", null, panel_UpdateAdmin, null);
