@@ -227,6 +227,83 @@ public class phieu_muon {
 			JOptionPane.showMessageDialog(null, "Sửa thông tin phiếu mượn thành công!");
 	}
 	
+	//Xuất số phiếu mượn
+	public static int xuatSoPhieuMuon() throws ClassNotFoundException, SQLException 
+	{
+		Connection conn = QLCSDL.connect();
+		java.sql.Statement statement = ((java.sql.Connection) conn).createStatement();
+		String sql = "SELECT COUNT(Ma_Phieu_Muon) FROM phieu_muon WHERE Da_Xoa = 0";
+		ResultSet resultSet = statement.executeQuery(sql);
+		if(resultSet.next())
+		{
+			int num = resultSet.getInt("COUNT(Ma_Phieu_Muon)");
+			return num;
+		}
+		return 0;
+	}
+	
+	//Xuất số người mượn
+	public static int xuatSoNguoiMuon() throws ClassNotFoundException, SQLException 
+	{
+		Connection conn = QLCSDL.connect();
+		java.sql.Statement statement = ((java.sql.Connection) conn).createStatement();
+		String sql = "SELECT COUNT( DISTINCT Ma_Ban_Doc) FROM phieu_muon WHERE Da_Xoa = 0";
+		ResultSet resultSet = statement.executeQuery(sql);
+		if(resultSet.next())
+		{
+			int num = resultSet.getInt("COUNT( DISTINCT Ma_Ban_Doc)");
+			return num;
+		}
+		return 0;
+	}
+	
+	//SELECT COUNT(Ma_Phieu_Muon) FROM phieu_muon WHERE Ngay_Tra > Han_Tra
+	//Xuất số phiếu mượn trả quá hạn
+	public static int xuatPhieuMuonQuaHan() throws ClassNotFoundException, SQLException 
+	{
+		Connection conn = QLCSDL.connect();
+		java.sql.Statement statement = ((java.sql.Connection) conn).createStatement();
+		String sql = "SELECT COUNT(Ma_Phieu_Muon) FROM phieu_muon WHERE Ngay_Tra > Han_Tra AND Da_Xoa = 0";
+		ResultSet resultSet = statement.executeQuery(sql);
+		if(resultSet.next())
+		{
+			int num = resultSet.getInt("COUNT(Ma_Phieu_Muon)");
+			return num;
+		}
+		return 0;
+	}
+	
+	//Xuất table danh sách phiếu mượn quá hạn
+	public static DefaultTableModel xuatTablePhieuMuonQuaHan(DefaultTableModel dtm) throws ClassNotFoundException, SQLException
+	{
+		Connection conn = null;
+		
+		conn = QLCSDL.connect();
+		
+		java.sql.Statement statement = null;
+		
+		statement = ((java.sql.Connection) conn).createStatement();
+		
+		String sql = "SELECT * FROM phieu_muon WHERE Ngay_Tra > Han_Tra AND Da_Xoa = 0";
+		ResultSet resultSet = null;
+		
+		resultSet = statement.executeQuery(sql);
+		
+		
+		while (resultSet.next()) 
+		 {
+			 Vector v = new Vector();
+			 v.add(resultSet.getString("ma_phieu_muon"));
+			 v.add(resultSet.getString("ma_ban_doc"));
+			 v.add(resultSet.getString("Ma_sach"));
+			 v.add(resultSet.getString("Ngay_Muon"));
+			 v.add(resultSet.getString("Han_Tra"));
+			 v.add(resultSet.getString("Ngay_Tra"));
+			 dtm.addRow(v);
+		 }
+		return dtm;
+	}
+	
 	public static int xuatPhieuMuon(){
 		return 0;
 	}

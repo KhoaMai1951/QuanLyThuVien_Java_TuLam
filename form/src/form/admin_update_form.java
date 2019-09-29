@@ -89,7 +89,7 @@ public class admin_update_form extends JFrame {
 		String ngayMuonReturnAsString = dtf.format(ldtDate);
 		return ngayMuonReturnAsString;
 	}
-	// Output table Sach
+	// Output table 
 	public void outputTable (JTable table, String tableName) throws ClassNotFoundException, SQLException
 	{
 		//----------set variable table as DefaultTableModel and add row--------------------

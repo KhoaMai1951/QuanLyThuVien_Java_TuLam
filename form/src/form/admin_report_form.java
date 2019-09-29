@@ -7,16 +7,22 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import object.admin;
 import object.member;
+import object.phieu_muon;
 import object.sach;
 
 import javax.swing.JLabel;
 import java.awt.Font;
 import java.sql.SQLException;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 public class admin_report_form extends JFrame {
 
 	private JPanel contentPane;
+	private JTable tablePhieuMuonQuaHan;
 
 	/**
 	 * Launch the application.
@@ -32,6 +38,22 @@ public class admin_report_form extends JFrame {
 				}
 			}
 		});
+	}
+	
+	// Output table 
+	public void outputTable (JTable table, String tableName) throws ClassNotFoundException, SQLException
+	{
+		//----------set variable table as DefaultTableModel and add row--------------------
+		DefaultTableModel dtm_sach = (DefaultTableModel) table.getModel();		
+	
+		switch(tableName)
+		{
+			case "tablePhieuMuonQuaHan":
+				//Xuất danh sách data phiếu mượn ra table
+				dtm_sach = phieu_muon.xuatTablePhieuMuonQuaHan(dtm_sach);
+				break;
+			
+		}
 	}
 
 	/**
@@ -80,8 +102,58 @@ public class admin_report_form extends JFrame {
 			labelSoSach = new JLabel(sach.xuatSoSach());
 			
 			labelSoSach.setFont(new Font("Tahoma", Font.BOLD, 14));
-			labelSoSach.setBounds(195, 66, 71, 32);
+			labelSoSach.setBounds(170, 66, 71, 32);
 			contentPane.add(labelSoSach);
+			
+			JLabel lblTngSPhiu = new JLabel("Tổng số phiếu mượn:");
+			lblTngSPhiu.setFont(new Font("Tahoma", Font.BOLD, 14));
+			lblTngSPhiu.setBounds(59, 113, 166, 32);
+			contentPane.add(lblTngSPhiu);
+			
+			JLabel labelSoPhieuMuon = new JLabel(Integer.toString(phieu_muon.xuatSoPhieuMuon()));
+			labelSoPhieuMuon.setFont(new Font("Tahoma", Font.BOLD, 14));
+			labelSoPhieuMuon.setBounds(224, 113, 71, 32);
+			contentPane.add(labelSoPhieuMuon);
+			
+			JLabel lblTngSBn_1 = new JLabel("Tổng số người mượn sách:");
+			lblTngSBn_1.setFont(new Font("Tahoma", Font.BOLD, 14));
+			lblTngSBn_1.setBounds(59, 153, 186, 32);
+			contentPane.add(lblTngSBn_1);
+			
+			JLabel labelSoNguoiMuonSach = new JLabel(Integer.toString(phieu_muon.xuatSoNguoiMuon()));
+			labelSoNguoiMuonSach.setFont(new Font("Tahoma", Font.BOLD, 14));
+			labelSoNguoiMuonSach.setBounds(267, 153, 71, 32);
+			contentPane.add(labelSoNguoiMuonSach);
+			
+			JLabel lblTngSPhiu_1 = new JLabel("Tổng số phiếu mượn quá hạn:");
+			lblTngSPhiu_1.setFont(new Font("Tahoma", Font.BOLD, 14));
+			lblTngSPhiu_1.setBounds(59, 196, 218, 32);
+			contentPane.add(lblTngSPhiu_1);
+			
+			JLabel labelSoPhieuMuonQuaHan = new JLabel(Integer.toString(phieu_muon.xuatPhieuMuonQuaHan()));
+			labelSoPhieuMuonQuaHan.setFont(new Font("Tahoma", Font.BOLD, 14));
+			labelSoPhieuMuonQuaHan.setBounds(287, 196, 71, 32);
+			contentPane.add(labelSoPhieuMuonQuaHan);
+			
+			JScrollPane scrollPane = new JScrollPane();
+			scrollPane.setBounds(0, 315, 1184, 321);
+			contentPane.add(scrollPane);
+			
+			tablePhieuMuonQuaHan = new JTable();
+			tablePhieuMuonQuaHan.setModel(new DefaultTableModel(
+				new Object[][] {
+				},
+				new String[] {
+					"Ma Phieu Muon", "Ma Ban Doc", "Ma Sach", "Ngay Muon", "Han Tra", "Ngay Tra"
+				}
+			));
+			scrollPane.setViewportView(tablePhieuMuonQuaHan);
+			outputTable(tablePhieuMuonQuaHan, "tablePhieuMuonQuaHan");
+			
+			JLabel lblDanhSchPhiu = new JLabel("Danh sách phiếu mượn quá hạn");
+			lblDanhSchPhiu.setFont(new Font("Tahoma", Font.BOLD, 18));
+			lblDanhSchPhiu.setBounds(372, 253, 339, 32);
+			contentPane.add(lblDanhSchPhiu);
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -89,6 +161,7 @@ public class admin_report_form extends JFrame {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		
 	}
 }
