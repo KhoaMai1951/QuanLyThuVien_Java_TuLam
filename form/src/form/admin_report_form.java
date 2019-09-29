@@ -89,6 +89,5 @@ public class admin_report_form extends JFrame {
 			e.printStackTrace();
 		}
 		
-		
 	}
 }
