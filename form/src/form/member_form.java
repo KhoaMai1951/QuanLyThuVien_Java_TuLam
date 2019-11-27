@@ -280,7 +280,7 @@ public class member_form extends JFrame {
 					// TODO Auto-generated catch block
 					e2.printStackTrace();
 				}
-				
+			
 			}
 		});
 		btnLapPhieuMuon.setBounds(372, 170, 178, 54);
@@ -289,6 +289,6 @@ public class member_form extends JFrame {
 		
 		
 		panel_lap_phieu_muon.add(textFieldMaBanDoc);
-		 
+	
 	}
 }

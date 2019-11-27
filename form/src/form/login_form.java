@@ -140,13 +140,12 @@ public class login_form {
 						}
 						else
 						{
-							
 							int ma_ban_doc_hien_hanh = k.getMa_Ban_Doc();
 							phieu_muon.luuMaBanDocHienHanh(ma_ban_doc_hien_hanh);
 							member.luuMaBanDocHienHanh(ma_ban_doc_hien_hanh);
 							JOptionPane.showMessageDialog(null, "Login Successful");
 							member_form form = new member_form();
-							form.setVisible(true);
+							form.setVisible(true);	
 						}
 					}
 					
